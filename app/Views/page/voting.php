@@ -24,26 +24,26 @@
                 <div class="row justify-content-center">
                     <div class="col-md-8">
                         <div class="card">
-                            <div class="card-header bg-primary text-white">
-                                <h4 class="mb-0 text-center">Countdown Timer</h4>
+                            <div class="card-header " style="background-color: #980517;">
+                                <h4 class="mb-0 text-center text-white">Batas waktu Voting</h4>
                             </div>
                             <div class="card-body">
                                 <div class="row text-center">
                                     <div class="col-3">
-                                        <h3 id="days" class="display-4">00</h3>
-                                        <p>Days</p>
+                                        <h3 id="days" class="display-4" style="color: #980517;">00</h3>
+                                        <p>Hari</p>
                                     </div>
                                     <div class="col-3">
-                                        <h3 id="hours" class="display-4">00</h3>
-                                        <p>Hours</p>
+                                        <h3 id="hours" class="display-4" style="color: #980517;">00</h3>
+                                        <p>Jam</p>
                                     </div>
                                     <div class="col-3">
-                                        <h3 id="minutes" class="display-4">00</h3>
-                                        <p>Minutes</p>
+                                        <h3 id="minutes" class="display-4" style="color: #980517;">00</h3>
+                                        <p>Menit</p>
                                     </div>
                                     <div class="col-3">
-                                        <h3 id="seconds" class="display-4">00</h3>
-                                        <p>Seconds</p>
+                                        <h3 id="seconds" class="display-4" style="color: #980517;">00</h3>
+                                        <p>Detik</p>
                                     </div>
                                 </div>
                             </div>

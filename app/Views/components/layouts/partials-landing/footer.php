@@ -4,19 +4,19 @@
         <div class="row gy-4">
             <div class="col-lg-4 col-md-6 footer-about">
                 <a href="index.html" class="logo d-flex align-items-center">
-                    <span class="sitename">Ormaone</span>
+                    <img src="<?= base_url('dist/landing/assets/img/logo1.png') ?>" alt="">
+                    <span class="sitename" style="color: #980517;">OrmaOne</span>
                 </a>
                 <div class="footer-contact pt-3">
                     <p>Jl. Husni Hamid No. 1, Kel. Karawang Wetan
                         Kec. Karawang Barat, Nagasari, Kec. Karawang Barat, Karawang, Jawa Barat 41312</p>
                     <p class="mt-3"><strong>Phone:</strong> <span>+62-812-9755-4172</span></p>
-                    <p><strong>Email:</strong> <span>kemenagkarawang@gmail.com</span></p>
+                    <p><strong>Email:</strong> <span>CSDLHorizon@gmail.com</span></p>
                 </div>
                 <div class="social-links d-flex mt-4">
-                    <a href="#"><i class="bi bi-twitter-x"></i></a>
                     <a href="#"><i class="bi bi-facebook"></i></a>
                     <a href="#"><i class="bi bi-instagram"></i></a>
-                    <a href="#"><i class="bi bi-linkedin"></i></a>
+                    <a href="#"><i class="bi bi-whatsapp"></i></a>
                 </div>
             </div>
 
@@ -54,7 +54,7 @@
         <p>© <span>Copyright</span> <strong class="px-1 sitename">Ormaone</strong><span>All Rights
                 Reserved</span></p>
         <div class="credits">
-            Designed by <a href="https://www.instagram.com/khol_lis312/">Khol_lis312</a>
+            programmer by <a href="https://www.instagram.com/khol_lis312/">Khol_lis312</a>
         </div>
     </div>
 
