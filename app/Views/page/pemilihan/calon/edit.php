@@ -51,13 +51,13 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="name" class="form-label">Calom 1</label>
+                        <label for="name" class="form-label">Ketua</label>
                         <select name="anggota_id_1" id="anggota_id_1" class="form-select" required>
                             <option value="">--Pilih Anggota--</option>
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="name" class="form-label">Calom 2</label>
+                        <label for="name" class="form-label">Wakil Ketua</label>
                         <select name="anggota_id_2" id="anggota_id_2" class="form-select" required>
                             <option value="">--Pilih Anggota--</option>
                         </select>

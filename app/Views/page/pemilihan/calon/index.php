@@ -46,8 +46,8 @@
                         <tr>
                             <th>Organisasi</th>
                             <th>Periode</th>
-                            <th>Calon 1</th>
-                            <th>Calon 2</th>
+                            <th>Ketua</th>
+                            <th>Wakil Ketua</th>
                             <th>Gambar 1</th>
                             <th>Gambar 2</th>
                             <th>Number</th>

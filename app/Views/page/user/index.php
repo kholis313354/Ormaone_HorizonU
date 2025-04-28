@@ -44,7 +44,7 @@
                 <table class="table table-striped" id="table1">
                     <thead>
                         <tr>
-                            <th>Level</th>
+                            <th>Role</th>
                             <th>Name</th>
                             <th>Email</th>
                             <th>Created At</th>
@@ -56,9 +56,9 @@
                         function level($item)
                         {
                             return match ($item) {
-                                '0' => 'Anggota',
-                                '1' => 'Admin',
-                                '2' => 'User',
+                                '0' => 'Organisasi - Fakultas',
+                                '1' => 'CSDL',
+                                '2' => 'BEM Universitas',
                                 default => 'Unknown'
                             };
                         }

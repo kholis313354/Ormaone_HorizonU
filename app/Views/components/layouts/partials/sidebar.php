@@ -3,9 +3,9 @@
         <div class="d-flex justify-content-between align-items-center">
             <div class="logo">
                 <a href="<?= base_url('/public/dist/assets/logo1.png') ?>">
-                    <img
-                        src="<?= base_url('/public/dist/assets/logo1.png') ?>"
-                        alt="Logo" srcset=""></a>
+                    <img height="50%" width="50px"
+                        src="<?= base_url('dist/landing/assets/img/logo1.png') ?>"
+                        alt="OrmaOne" srcset=""></a>
             </div>
             <div class="theme-toggle d-flex gap-2  align-items-center mt-2">
                 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -46,18 +46,12 @@
         <?php
         function isActive(array $uri)
         {
-            $active = false;
-
-            for ($i = 0; $i < count($uri); $i++) {
-                // echo $uri[$i];
-                if (base_url(uri_string()) == $uri[$i]) {
-                    $active = true;
-                    break;
-                } else {
-                    $active = false;
+            foreach ($uri as $u) {
+                if (base_url(uri_string()) == $u) {
+                    return 'active submenu-open';
                 }
             }
-            return $active ? 'active submenu-open' : '';
+            return '';
         }
 
         $menus = [
@@ -95,6 +89,16 @@
                 'title' => 'Kandidat',
                 'url' => url_to('pemilihan.calon.index'),
             ],
+            'E-sertifikat' => [
+                'icon' => 'bi bi-file-earmark-text',
+                'title' => 'E-Sertifikat',
+                'url' => '#',
+            ],
+            'Blogger' => [
+                'icon' => 'bi bi-bootstrap',
+                'title' => 'Blogger',
+                'url' => '#',
+            ],
             'Users' => [
                 'icon' => 'bi bi-person',
                 'title' => 'Users',
@@ -105,11 +109,12 @@
                 'title' => 'Logout',
                 'url' => url_to('logout'),
             ],
-        ]
+        ];
         ?>
+
         <ul class="menu">
-            <li class="sidebar-title">Menu</li>
             <?php if (!session()->get('isLoggedIn')) : ?>
+                <li class="sidebar-title">Menu</li>
                 <li class="sidebar-item <?= isActive([url_to('login')]) ?>">
                     <a href="<?= url_to('login') ?>" class="sidebar-link">
                         <i class="bi bi-box-arrow-in-right"></i>
@@ -117,28 +122,56 @@
                     </a>
                 </li>
             <?php else : ?>
+                <?php
+                $level = session()->get('level');
+
+                // Set menu allowed berdasarkan level
+                $menus_allowed = [];
+                if (in_array($level, [1, 2])) { // SuperAdmin dan Admin
+                    $menus_allowed = [
+                        'dashboard',
+                        'Daftar',
+                        'pemilihan',
+                        'Calon Pemilihan',
+                        'E-sertifikat',
+                        'Blogger',
+                        'Users',
+                        'Logout'
+                    ];
+                    $menuTitle = 'Menu Admin';
+                } elseif ($level == 0) { // Anggota Organisasi
+                    $menus_allowed = [
+                        'dashboard', // Ditambahkan dashboard sesuai permintaan
+                        'E-sertifikat',
+                        'Blogger',
+                        'Logout'
+                    ];
+                    $menuTitle = 'Menu Anggota';
+                } else {
+                    $menuTitle = 'Menu';
+                }
+                ?>
+
+                <li class="sidebar-title"><?= $menuTitle ?></li>
+
                 <?php foreach ($menus as $key => $menu) : ?>
-                    <li class="sidebar-item <?= isActive([$menu['url']]) ?> <?= isset($menu['submenu']) ? 'has-sub' : '' ?>">
-                        <a href="<?= $menu['url'] ?>" class="sidebar-link">
-                            <i class="<?= $menu['icon'] ?>"></i>
-                            <span><?= $menu['title'] ?></span>
-                        </a>
-                        <?php if (isset($menu['submenu'])) : ?>
-                            <ul class="submenu <?php
-                                                $listMenus = [];
-                                                foreach ($menu['submenu'] as $sub) {
-                                                    $listMenus[] = $sub['url'];
-                                                }
-                                                echo isActive($listMenus);
-                                                ?>">
-                                <?php foreach ($menu['submenu'] as $sub) : ?>
-                                    <li class="<?= isActive([$sub['url']]) ?> submenu-item">
-                                        <a href="<?= $sub['url'] ?>" class="submenu-link"><?= $sub['title'] ?></a>
-                                    </li>
-                                <?php endforeach; ?>
-                            </ul>
-                        <?php endif; ?>
-                    </li>
+                    <?php if (in_array($key, $menus_allowed)) : ?>
+                        <li class="sidebar-item <?= isActive([$menu['url']]) ?> <?= isset($menu['submenu']) ? 'has-sub' : '' ?>">
+                            <a href="<?= $menu['url'] ?>" class="sidebar-link">
+                                <i class="<?= $menu['icon'] ?>"></i>
+                                <span><?= $menu['title'] ?></span>
+                            </a>
+                            <?php if (isset($menu['submenu']) && in_array($level, [1, 2])) : ?>
+                                <ul class="submenu <?= isActive(array_column($menu['submenu'], 'url')) ?>">
+                                    <?php foreach ($menu['submenu'] as $sub) : ?>
+                                        <li class="submenu-item <?= isActive([$sub['url']]) ?>">
+                                            <a href="<?= $sub['url'] ?>" class="submenu-link"><?= $sub['title'] ?></a>
+                                        </li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            <?php endif; ?>
+                        </li>
+                    <?php endif; ?>
                 <?php endforeach; ?>
             <?php endif; ?>
         </ul>

@@ -1,11 +1,8 @@
-<footer>
-    <div class="footer clearfix mb-0 text-muted">
-        <div class="float-start">
-            <p>2025 &copy; E - Voting</p>
-        </div>
-        <div class="float-end">
-            <p>Crafted with <span class="text-danger"><i class="bi bi-heart-fill icon-mid"></i></span>
-                by <a href="google.com" target="_blank">Kholis</a></p>
+<footer class="py-4  mt-auto">
+    <div class="container-fluid px-4">
+        <div class="d-flex align-items-center justify-content-center small">
+            <div class="text-muted">Copyright &copy; ormaone 2025</div>
+
         </div>
     </div>
 </footer>

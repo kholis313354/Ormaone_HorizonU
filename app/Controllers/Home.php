@@ -136,7 +136,7 @@ class Home extends BaseController
 
         // Insert vote data
         $this->pemilihanCalonSuaraModel->insert($data);
-        return redirect()->to(url_to('voting.detail', $data['pemilihan_calon_id']))->with('success', 'Berhasil Voting.');
+        return redirect()->to(url_to('voting.detail', $data['pemilihan_calon_id']))->with('success', 'Berhasil Voting, Terima Kasih🙏.');
     }
 
     public function sertifikat()

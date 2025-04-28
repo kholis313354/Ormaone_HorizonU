@@ -8,10 +8,12 @@ class Auth extends BaseController
 {
     private $userModel;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->userModel = new UserModel;
     }
-    public function index() {
+    public function index()
+    {
         $title = 'Login';
 
         // Check if the user is already logged in
@@ -20,9 +22,10 @@ class Auth extends BaseController
         return view('auth/login', compact('title'));
     }
 
-    public function login() {
+    public function login()
+    {
         // Get the request data
-        if(!$this->validate([
+        if (!$this->validate([
             'email' => [
                 'rules' => 'required|valid_email',
                 'errors' => [
@@ -42,15 +45,16 @@ class Auth extends BaseController
 
         // Check if the user exists
         $user = $this->userModel->where('email', $data['email'])->first();
-        if(!$user) return redirect()->back()->withInput()->with('errors', ['email' => 'No record found with this email']);
+        if (!$user) return redirect()->back()->withInput()->with('errors', ['email' => 'No record found with this email']);
         // Check if the password is correct
-        if(!password_verify($data['password'], $user['password'])) return redirect()->back()->withInput()->with('errors', ['password' => 'Password is incorrect']);
+        if (!password_verify($data['password'], $user['password'])) return redirect()->back()->withInput()->with('errors', ['password' => 'Password is incorrect']);
 
         // Set session
         $sessionData = [
             'id' => $user['id'],
             'name' => $user['name'],
             'email' => $user['email'],
+            'level' => $user['level'], // Pastikan ini ada
             'isLoggedIn' => true
         ];
         session()->set($sessionData);
@@ -58,7 +62,8 @@ class Auth extends BaseController
         return redirect()->to(url_to('dashboard'));
     }
 
-    public function logout() {
+    public function logout()
+    {
         // Destroy the session
         session()->destroy();
         return redirect()->to(url_to('login'))->with('success', 'You have been logged out');

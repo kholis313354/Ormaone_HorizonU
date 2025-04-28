@@ -9,7 +9,7 @@
         href="<?= base_url('/public/logo1.png') ?>"
         type="image/x-icon">
     <link rel="shortcut icon"
-        href="<?= base_url('/public/dist/ormaone/img/logo1.png') ?>">
+        href="<?= base_url('public/dist/ormaone/img/logo1.png') ?>">
     <?php include_once('partials/styles.php') ?>
     <?= $this->renderSection('styles') ?>
 </head>
@@ -20,9 +20,12 @@
         <div id="sidebar">
             <?php include_once('partials/sidebar.php'); ?>
         </div>
+        <!-- <div id="sidebar">
+            <?php include_once('partials/sidebar.php'); ?>
+        </div> -->
         <div id="main">
             <?= $this->renderSection('content') ?>
-            <?php // include_once('partials/footer.php'); 
+            <?php include_once('partials/footer.php');
             ?>
         </div>
     </div>
