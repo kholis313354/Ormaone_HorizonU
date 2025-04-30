@@ -55,21 +55,21 @@
     </div>
 </header>
 
-<!-- Card content-->
-<div class="card mb-4">
-    <div class="card-body">
-        <div class="card-title title-body-chart">Statistik Voting ORMAWA</div>
-        <div class="row">
 
-            <div class="col-xl-12 col-md-12 chart-arrow">
-                <div id="chart-container">
-                    <div class="chart" id="chart1">
-                        <div class="card card-chart mb-1">
-                            <h6 class="fw-semibold">Jumlah Suara Voting</h6>
-                            <canvas id="chart-voting" height="250px"></canvas>
-                        </div>
-                    </div>
-                </div>
+<!-- Card content-->
+<!-- Card content -->
+<div class="card mb-4 border-0 shadow-sm" style="border-radius: 12px;">
+    <div class="card-body p-2 p-md-4">
+        <h5 class="card-title text-center mb-2 mb-md-3" style="color: #980517; font-weight: 600; font-size: clamp(0.9rem, 3.5vw, 1.25rem);">
+            Statistik Voting ORMAWA
+        </h5>
+
+        <div class="chart-container p-2 bg-white rounded-3" style="box-shadow: 0 1px 4px rgba(0,0,0,0.05);">
+            <h6 class="text-center mb-1 mb-md-2 fw-semibold" style="color: #333; font-size: clamp(0.8rem, 2.5vw, 1rem);">
+                Jumlah Suara Voting
+            </h6>
+            <div class="chart-wrapper" style="height: clamp(180px, 40vh, 250px); min-height: 180px; position: relative;">
+                <canvas id="chart-voting"></canvas>
             </div>
         </div>
     </div>
@@ -84,25 +84,30 @@
 <div class="container-fluid categories pb-5">
     <div class="container pb-5">
         <div class="text-center mx-auto pb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 800px;">
-            <h1 class="display-5 text-capitalize mb-3">Kandidat <span style="color: #980517;">BEM
-                    Universitas</span>
-            </h1>
+            <h1 class="display-5 text-capitalize mb-3">Kandidat <span style="color: #980517;">BEM Universitas</span></h1>
         </div>
         <div class="categories-carousel owl-carousel wow fadeInUp" data-wow-delay="0.1s">
             <?php foreach ($calon as $c) : ?>
                 <div class="categories-item p-4">
-                    <div class="categories-item-inner">
-                        <div class="categories-img rounded-top" style="background-color: #980517">
-                            <img src="<?= base_url('uploads/' . $c['gambar_1']) ?>" class="img-fluid w-100 rounded-top" alt="">
+                    <div class="categories-item-inner d-flex flex-column h-100">
+                        <div class="categories-img rounded-top" style="background-color: #980517; height: 250px; overflow: hidden;">
+                            <img src="<?= base_url('uploads/' . $c['gambar_1']) ?>" class="img-fluid w-100 h-100 object-fit-cover rounded-top" alt="">
                         </div>
-                        <div class="categories-content rounded-bottom p-4">
-
-                            <a href="#" class="h4 d-block mb-3"><?= $c['anggota_1_name'] ?> - <?= $c['anggota_2_name'] ?></a>
-                            <div class="categories-review mb-4">
-                                <p class="mb-3">"<?= $c['description'] ?>"</p>
+                        <div class="categories-content rounded-bottom p-4 d-flex flex-column flex-grow-1">
+                            <a href="#" class="h4 d-block mb-3 text-truncate"><?= htmlspecialchars($c['anggota_1_name'] ?? '') ?> - <?= htmlspecialchars($c['anggota_2_name'] ?? '') ?></a>
+                            <div class="categories-review mb-4 flex-grow-1">
+                                <div class="card-description" style="
+                                    display: -webkit-box;
+                                    -webkit-line-clamp: 4;
+                                    -webkit-box-orient: vertical;
+                                    overflow: hidden;
+                                    text-overflow: ellipsis;
+                                    min-height: 96px;">
+                                    <?= html_entity_decode(strip_tags($c['description'] ?? '')) ?>
+                                </div>
                             </div>
-                            <a href="<?= url_to('voting.detail', $c['id']) ?>" class="btn  rounded-pill d-flex justify-content-center py-3"
-                                style=" background-color: #980517; color: #fff;">
+                            <a href="<?= url_to('voting.detail', $c['id']) ?>" class="btn rounded-pill d-flex justify-content-center py-3 mt-auto"
+                                style="background-color: #980517; color: #fff;">
                                 Lihat Detail
                             </a>
                         </div>
@@ -122,6 +127,7 @@
 <script src="<?= base_url('dist/landing/assets/lib/counterup/counterup.min.js') ?>"></script>
 <script src="<?= base_url('dist/landing/assets/lib/owlcarousel/owl.carousel.min.js') ?>"></script>
 <script src="<?= base_url('dist/landing/assets/js/main.js') ?>"></script>
+<!-- script card Content -->
 <script>
     var ctxY = document.getElementById('chart-voting').getContext('2d');
     var labels = [];
@@ -130,33 +136,119 @@
         labels.push('<?= $key ?>');
         datas.push(<?= $val ?>);
     <?php endforeach; ?>
+
+    // Define 5 different colors for the bars
+    var backgroundColors = [
+        '#980517', // Original maroon
+        '#4A6FDC', // Blue
+        '#2E8B57', // Sea green
+        '#FF8C00', // Dark orange
+        '#9932CC' // Dark orchid
+    ];
+
+    // Create array of colors matching each candidate
+    var barColors = [];
+    for (var i = 0; i < labels.length; i++) {
+        barColors.push(backgroundColors[i % backgroundColors.length]);
+    }
+
     var chartSuara4 = new Chart(ctxY, {
         type: 'bar',
         data: {
             labels: labels,
             datasets: [{
-                label: 'Jumlah Suara',
                 data: datas,
-                borderRadius: 5,
+                backgroundColor: barColors,
+                borderWidth: 1,
+                borderRadius: 4,
+                barPercentage: 0.6
             }]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             plugins: {
                 legend: {
                     display: false
+                },
+                tooltip: {
+                    enabled: window.innerWidth > 576,
+                    backgroundColor: 'rgba(0,0,0,0.8)',
+                    titleFont: {
+                        size: window.innerWidth < 768 ? 10 : 12,
+                        weight: 'bold'
+                    },
+                    bodyFont: {
+                        size: window.innerWidth < 768 ? 9 : 11
+                    },
+                    callbacks: {
+                        label: function(context) {
+                            return ' Jumlah Suara: ' + context.raw;
+                        }
+                    }
                 }
             },
             scales: {
                 y: {
                     beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0,0,0,0.05)',
+                        drawBorder: false
+                    },
                     ticks: {
-                        stepSize: 50
+                        stepSize: 50,
+                        font: {
+                            weight: 'bold',
+                            size: window.innerWidth < 576 ? 8 : 10
+                        },
+                        padding: 5
                     }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        font: {
+                            weight: 'bold',
+                            size: window.innerWidth < 576 ? 8 : 10
+                        },
+                        padding: 5
+                    }
+                }
+            },
+            layout: {
+                padding: {
+                    top: 10,
+                    right: window.innerWidth < 576 ? 5 : 10,
+                    left: window.innerWidth < 576 ? 5 : 10,
+                    bottom: 10
                 }
             }
         }
     });
+
+    // Handle window resize
+    function handleResize() {
+        const isMobile = window.innerWidth < 576;
+        const isTablet = window.innerWidth < 768;
+
+        chartSuara4.options.plugins.tooltip.enabled = !isMobile;
+        chartSuara4.options.scales.y.ticks.font.size = isMobile ? 8 : (isTablet ? 9 : 10);
+        chartSuara4.options.scales.x.ticks.font.size = isMobile ? 8 : (isTablet ? 9 : 10);
+        chartSuara4.options.plugins.tooltip.titleFont.size = isTablet ? 10 : 12;
+        chartSuara4.options.plugins.tooltip.bodyFont.size = isTablet ? 9 : 11;
+        chartSuara4.options.layout.padding = {
+            top: 10,
+            right: isMobile ? 5 : 10,
+            left: isMobile ? 5 : 10,
+            bottom: 10
+        };
+        chartSuara4.update();
+    }
+
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleResize);
 </script>
 <script>
     // Set the date we're counting down to (1 month from now)

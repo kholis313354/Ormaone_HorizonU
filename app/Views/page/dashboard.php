@@ -369,10 +369,24 @@
     var ctxY = document.getElementById('chart-voting').getContext('2d');
     var labels = [];
     var datas = [];
+
     <?php foreach ($totalSuaras as $key => $val): ?>
         labels.push('<?= $key ?>');
         datas.push(<?= $val ?>);
     <?php endforeach; ?>
+
+    // Tambahkan 5 warna berbeda
+    var backgroundColors = [
+        '#980517', // biru
+        '#1cc88a', // hijau
+        '#36b9cc', // biru muda
+        '#f6c23e', // kuning
+        '#e74a3b' // merah
+    ];
+
+    // Sesuaikan jumlah warna dengan jumlah data (ulang jika data > 5)
+    var dynamicColors = datas.map((_, i) => backgroundColors[i % backgroundColors.length]);
+
     var chartSuara4 = new Chart(ctxY, {
         type: 'bar',
         data: {
@@ -381,6 +395,7 @@
                 label: 'Jumlah Suara',
                 data: datas,
                 borderRadius: 5,
+                backgroundColor: dynamicColors
             }]
         },
         options: {
@@ -401,4 +416,5 @@
         }
     });
 </script>
+
 <?= $this->endSection() ?>

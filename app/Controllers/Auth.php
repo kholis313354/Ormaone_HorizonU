@@ -45,9 +45,9 @@ class Auth extends BaseController
 
         // Check if the user exists
         $user = $this->userModel->where('email', $data['email'])->first();
-        if (!$user) return redirect()->back()->withInput()->with('errors', ['email' => 'No record found with this email']);
+        if (!$user) return redirect()->back()->withInput()->with('errors', ['email' => 'Email anda salah']);
         // Check if the password is correct
-        if (!password_verify($data['password'], $user['password'])) return redirect()->back()->withInput()->with('errors', ['password' => 'Password is incorrect']);
+        if (!password_verify($data['password'], $user['password'])) return redirect()->back()->withInput()->with('errors', ['password' => 'Password Salah']);
 
         // Set session
         $sessionData = [
@@ -58,7 +58,7 @@ class Auth extends BaseController
             'isLoggedIn' => true
         ];
         session()->set($sessionData);
-        session()->setFlashdata('success', 'Welcome back ' . $user['name']);
+        session()->setFlashdata('success', 'Selamat Datang ' . $user['name']);
         return redirect()->to(url_to('dashboard'));
     }
 

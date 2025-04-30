@@ -22,7 +22,7 @@
 <?php include_once(APPPATH . 'Views/components/flash.php'); ?>
 
 <!-- Card content-->
-<div class="card mb-2">
+<div class="card mb-3">
     <div class="card-body">
         <div class="card-title title-body-chart">Statistik Voting ORMAWA</div>
         <div class="row">
@@ -84,11 +84,28 @@
 <!-- Card conten end -->
 <!-- Bootstrap core JS-->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const nimInput = document.getElementById('nim');
         const kodeFakultasInput = document.getElementById('kode_fakultas');
+        const voteForm = document.getElementById('voteForm');
 
+        // Valid kode fakultas
+        const validKodeFakultas = [
+            '57201', // Sistem Informasi S1
+            '14201', // Keperawatan S1
+            '14401', // Keperawatan D3
+            '14901', // Profesi Ners
+            '15401', // Kebidanan D3
+            '55201', // Informatika S1
+            '61201', // Manajemen S1
+            '62201' // Akuntansi S1
+        ];
+
+        // Extract kode fakultas from NIM
         if (nimInput) {
             nimInput.addEventListener('input', function() {
                 const nim = this.value;
@@ -98,6 +115,52 @@
                 } else {
                     kodeFakultasInput.value = '';
                 }
+            });
+        }
+
+        // Form submission validation
+        if (voteForm) {
+            voteForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const nim = document.getElementById('nim').value;
+                const email = document.getElementById('email').value;
+
+                // Validate NIM length
+                if (nim.length !== 16) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'NIM harus 16 digit!'
+                    });
+                    return;
+                }
+
+                // Extract kode fakultas from NIM
+                const kodeFakultas = nim.substring(5, 10);
+
+                // Validate kode fakultas
+                if (!validKodeFakultas.includes(kodeFakultas)) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Kamu bukan mahasiswa Horizon University Indonesia'
+                    });
+                    return;
+                }
+
+                // Validate email domain
+                if (!email.endsWith('@krw.horizon.ac.id')) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Vote tidak sah',
+                        text: 'Gunakan Email Kampus'
+                    });
+                    return;
+                }
+
+                // If all validations pass, submit the form
+                this.submit();
             });
         }
     });
@@ -186,12 +249,10 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="<?= url_to('vote') ?>" method="POST" enctype="multipart/form-data">
+                <form action="<?= url_to('vote') ?>" method="POST" enctype="multipart/form-data" id="voteForm">
                     <?= csrf_field() ?>
                     <input type="hidden" name="pemilihan_calon_id" id="pemilihan_calon_id">
-                    <!-- <div class="mb-3"> -->
                     <input type="hidden" class="form-control" id="kode_fakultas" name="kode_fakultas" placeholder="Kode Fakultas" required>
-                    <!-- </div> -->
                     <div class="mb-3">
                         <label for="nim" class="form-label">NIM</label>
                         <input type="text" class="form-control" id="nim" name="nim" placeholder="NIM" maxlength="16" minlength="16" required>
@@ -202,7 +263,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="email" name="email" placeholder="Email" required>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="Email Kampus" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Vote</button>
                 </form>
@@ -227,6 +288,22 @@
         labels.push('<?= $key ?>');
         datas.push(<?= $val ?>);
     <?php endforeach; ?>
+
+    // Define 5 different colors for the bars
+    var backgroundColors = [
+        '#980517', // Maroon (original color)
+        '#4A6FDC', // Blue
+        '#2E8B57', // Sea Green
+        '#FF8C00', // Dark Orange
+        '#9932CC' // Dark Orchid
+    ];
+
+    // Assign colors to each bar (cycles through the 5 colors)
+    var barColors = [];
+    for (var i = 0; i < labels.length; i++) {
+        barColors.push(backgroundColors[i % backgroundColors.length]);
+    }
+
     var chartSuara4 = new Chart(ctxY, {
         type: 'bar',
         data: {
@@ -234,6 +311,9 @@
             datasets: [{
                 label: 'Jumlah Suara',
                 data: datas,
+                backgroundColor: barColors, // Use the color array here
+                borderColor: '#ffffff',
+                borderWidth: 1,
                 borderRadius: 5,
             }]
         },
