@@ -1,0 +1,562 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int             @id @default(autoincrement())
+  name          String
+  email         String          @unique
+  password      String
+  level         Int
+  profilePhoto  String?         @map("profile_photo")
+  organisasiId  Int?            @map("organisasi_id")
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime        @updatedAt @map("updated_at")
+  status        String          @default("active")
+  anggotas      Anggota[]
+  arsipDocs     ArsipDocument[]
+  beritas       Berita[]
+  formAccess    FormAccessLog[]
+  formResponses FormResponse[]
+  forms         Form[]
+  kalenders     Kalender[]
+  organisasi    Organisasi?     @relation(fields: [organisasiId], references: [id])
+
+  @@map("users")
+}
+
+model Fakultas {
+  id           Int          @id @default(autoincrement())
+  namaFakultas String       @map("nama_fakultas")
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @updatedAt @map("updated_at")
+  anggotas     Anggota[]
+  beritas      Berita[]
+  organisasis  Organisasi[]
+  sertifikats  Sertifikat[]
+
+  @@map("fakultas")
+}
+
+model Organisasi {
+  id           Int                      @id @default(autoincrement())
+  name         String
+  description  String
+  type         String
+  image        String                   @default("")
+  fakultasId   Int?                     @map("fakultas_id")
+  kodeFakultas String?                  @map("kode_fakultas")
+  createdAt    DateTime                 @default(now()) @map("created_at")
+  updatedAt    DateTime                 @updatedAt @map("updated_at")
+  anggaran     Anggaran[]
+  anggotas     Anggota[]
+  arsipDocs    ArsipDocument[]
+  beritas      Berita?                  @relation("OrgBerita")
+  suaraDetails DetailSuara[]
+  forms        Form[]
+  kepengurusan Kepengurusan[]
+  fakultas     Fakultas?                @relation(fields: [fakultasId], references: [id])
+  pemilihans   Pemilihan[]
+  proker       ProgramKerja[]
+  tampilan     StrukturTampilan[]
+  tampilanDiv  StrukturTampilanDivisi[]
+  strukturs    Struktur[]
+  users        User[]
+  visiMisi     VisiMisi[]
+
+  @@map("organisasis")
+}
+
+model Mahasiswa {
+  id        Int                   @id @default(autoincrement())
+  nim       String                @unique
+  name      String
+  email     String                @unique
+  prodi     String?
+  angkatan  String?
+  password  String?
+  createdAt DateTime              @default(now()) @map("created_at")
+  updatedAt DateTime              @updatedAt @map("updated_at")
+  suara     PemilihanCalonSuara[]
+
+  @@map("mahasiswa")
+}
+
+model Anggota {
+  id           Int              @id @default(autoincrement())
+  organisasiId Int              @map("organisasi_id")
+  userId       Int?             @map("user_id")
+  fakultasId   Int?             @map("fakultas_id")
+  name         String
+  nim          String?
+  jabatan      String?
+  status       Int              @default(1)
+  createdAt    DateTime         @default(now()) @map("created_at")
+  updatedAt    DateTime         @updatedAt @map("updated_at")
+  fakultas     Fakultas?        @relation(fields: [fakultasId], references: [id])
+  organisasi   Organisasi       @relation(fields: [organisasiId], references: [id])
+  user         User?            @relation(fields: [userId], references: [id])
+  suaraDetails DetailSuara[]
+  kepengurusan Kepengurusan[]
+  calon1       PemilihanCalon[] @relation("KetuaCalon")
+  calon2       PemilihanCalon[] @relation("WakilCalon")
+
+  @@map("anggotas")
+}
+
+model Kepengurusan {
+  id           Int           @id @default(autoincrement())
+  organisasiId Int           @map("organisasi_id")
+  anggotaId    Int           @map("anggota_id")
+  jabatan      String
+  tahun        String
+  periode      String?
+  status       Int           @default(1)
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+  suaraDetails DetailSuara[]
+  anggota      Anggota       @relation(fields: [anggotaId], references: [id])
+  organisasi   Organisasi    @relation(fields: [organisasiId], references: [id])
+
+  @@map("kepengurusans")
+}
+
+model Berita {
+  id           Int         @id @default(autoincrement())
+  namaKegiatan String      @map("nama_kegiatan")
+  gambar       String?
+  link         String?
+  kategori     String      @default("blogger")
+  deskripsi1   String?
+  deskripsi2   String?
+  deskripsi3   String?
+  tanggal      DateTime
+  status       String      @default("published")
+  userId       Int         @map("user_id")
+  fakultasId   Int?        @map("fakultas_id")
+  createdAt    DateTime    @default(now()) @map("created_at")
+  updatedAt    DateTime    @updatedAt @map("updated_at")
+  organisasiId Int?        @unique @map("organisasi_id")
+  user_email   String?
+  user_name    String?
+  fakultas     Fakultas?   @relation(fields: [fakultasId], references: [id])
+  organisasi   Organisasi? @relation("OrgBerita", fields: [organisasiId], references: [id])
+  user         User        @relation(fields: [userId], references: [id])
+
+  @@map("berita")
+}
+
+model ArsipDocument {
+  id           Int        @id @default(autoincrement())
+  namaFile     String     @map("nama_file")
+  kategori     String
+  file         String
+  keterangan   String?
+  tahun        String
+  organisasiId Int        @map("organisasi_id")
+  userId       Int        @map("user_id")
+  userLevel    Int        @map("user_level")
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+  organisasi   Organisasi @relation(fields: [organisasiId], references: [id])
+  user         User       @relation(fields: [userId], references: [id])
+
+  @@map("arsip_document")
+}
+
+model Kalender {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  startDate   DateTime @map("start_date")
+  endDate     DateTime @map("end_date")
+  color       String?  @default("#3788d8")
+  userId      Int      @map("user_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@map("kalender")
+}
+
+model Pesan {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  subject   String
+  message   String
+  status    String   @default("unread")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("pesan")
+}
+
+model Pemilihan {
+  id           Int              @id @default(autoincrement())
+  title        String
+  organisasiId Int              @map("organisasi_id")
+  tahun        String
+  status       Int              @default(0)
+  startDate    DateTime         @map("start_date")
+  endDate      DateTime         @map("end_date")
+  createdAt    DateTime         @default(now()) @map("created_at")
+  updatedAt    DateTime         @updatedAt @map("updated_at")
+  suaraDetails DetailSuara[]
+  calons       PemilihanCalon[]
+  organisasi   Organisasi       @relation(fields: [organisasiId], references: [id])
+
+  @@map("pemilihans")
+}
+
+model PemilihanCalon {
+  id           Int                   @id @default(autoincrement())
+  pemilihanId  Int                   @map("pemilihan_id")
+  noUrut       Int                   @map("no_urut")
+  anggotaId1   Int                   @map("anggota_id_1")
+  anggotaId2   Int?                  @map("anggota_id_2")
+  visi         String
+  misi         String
+  foto         String?
+  suaraCount   Int                   @default(0) @map("suara_count")
+  suaraDetails DetailSuara[]
+  suaraList    PemilihanCalonSuara[]
+  ketua        Anggota               @relation("KetuaCalon", fields: [anggotaId1], references: [id])
+  wakil        Anggota?              @relation("WakilCalon", fields: [anggotaId2], references: [id])
+  pemilihan    Pemilihan             @relation(fields: [pemilihanId], references: [id])
+
+  @@map("pemilihan_calons")
+}
+
+model PemilihanCalonSuara {
+  id               Int            @id @default(autoincrement())
+  pemilihanCalonId Int            @map("pemilihan_calon_id")
+  mahasiswaId      Int?           @map("mahasiswa_id")
+  nim              String?
+  name             String?
+  email            String?
+  ipAddress        String?        @map("ip_address")
+  userAgent        String?        @map("user_agent")
+  status           Int            @default(0)
+  verifiedAt       DateTime?      @map("verified_at")
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+  mahasiswa        Mahasiswa?     @relation(fields: [mahasiswaId], references: [id])
+  calon            PemilihanCalon @relation(fields: [pemilihanCalonId], references: [id])
+
+  @@map("pemilihan_calon_suara")
+}
+
+model DetailSuara {
+  id               Int            @id @default(autoincrement())
+  pemilihanId      Int            @map("pemilihan_id")
+  pemilihanCalonId Int            @map("pemilihan_calon_id")
+  organisasiId     Int            @map("organisasi_id")
+  anggotaId        Int?           @map("anggota_id")
+  kepengurusanId   Int?           @map("kepengurusan_id")
+  suara            Int            @default(1)
+  createdAt        DateTime       @default(now()) @map("created_at")
+  anggota          Anggota?       @relation(fields: [anggotaId], references: [id])
+  kepengurusan     Kepengurusan?  @relation(fields: [kepengurusanId], references: [id])
+  organisasi       Organisasi     @relation(fields: [organisasiId], references: [id])
+  calon            PemilihanCalon @relation(fields: [pemilihanCalonId], references: [id])
+  pemilihan        Pemilihan      @relation(fields: [pemilihanId], references: [id])
+
+  @@map("detail_suara")
+}
+
+model Form {
+  id            Int             @id @default(autoincrement())
+  title         String
+  description   String?
+  status        String          @default("draft")
+  encryptedLink String?         @unique @map("encrypted_link")
+  userId        Int             @map("user_id")
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime        @updatedAt @map("updated_at")
+  deletedAt     DateTime?       @map("deleted_at")
+  organisasiId  Int             @map("organisasi_id")
+  accessLogs    FormAccessLog[]
+  fields        FormField[]
+  responses     FormResponse[]
+  organisasi    Organisasi      @relation(fields: [organisasiId], references: [id])
+  user          User            @relation(fields: [userId], references: [id])
+
+  @@map("forms")
+}
+
+model FormField {
+  id             Int                 @id @default(autoincrement())
+  formId         Int                 @map("form_id")
+  label          String
+  fieldType      String              @map("field_type")
+  options        Json?
+  isRequired     Boolean             @default(false) @map("is_required")
+  order          Int                 @default(0)
+  isActive       Boolean             @default(true) @map("is_active")
+  fieldResponses FormFieldResponse[]
+  form           Form                @relation(fields: [formId], references: [id])
+
+  @@map("form_fields")
+}
+
+model FormResponse {
+  id             Int                 @id @default(autoincrement())
+  formId         Int                 @map("form_id")
+  userId         Int?                @map("user_id")
+  submittedAt    DateTime            @default(now()) @map("submitted_at")
+  ipAddress      String?             @map("ip_address")
+  status         String              @default("submitted")
+  fieldResponses FormFieldResponse[]
+  form           Form                @relation(fields: [formId], references: [id])
+  user           User?               @relation(fields: [userId], references: [id])
+
+  @@map("form_responses")
+}
+
+model FormFieldResponse {
+  id         Int          @id @default(autoincrement())
+  responseId Int          @map("response_id")
+  fieldId    Int          @map("field_id")
+  value      String
+  field      FormField    @relation(fields: [fieldId], references: [id])
+  response   FormResponse @relation(fields: [responseId], references: [id])
+
+  @@map("form_field_responses")
+}
+
+model FormAccessLog {
+  id        Int      @id @default(autoincrement())
+  formId    Int      @map("form_id")
+  userId    Int?     @map("user_id")
+  ipAddress String?  @map("ip_address")
+  userAgent String?  @map("user_agent")
+  createdAt DateTime @default(now()) @map("created_at")
+  form      Form     @relation(fields: [formId], references: [id])
+  user      User?    @relation(fields: [userId], references: [id])
+
+  @@map("form_access_logs")
+}
+
+model Struktur {
+  id           Int        @id @default(autoincrement())
+  organisasiId Int        @map("organisasi_id")
+  tahun        String
+  periode      String?
+  strukturData Json       @map("struktur_data")
+  isActive     Boolean    @default(true) @map("is_active")
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+  organisasi   Organisasi @relation(fields: [organisasiId], references: [id])
+
+  @@map("strukturs")
+}
+
+model StrukturTampilan {
+  id           Int        @id @default(autoincrement())
+  organisasiId Int        @map("organisasi_id")
+  tahun        String
+  periode      String?
+  isActive     Boolean    @default(true) @map("is_active")
+  nama1        String?
+  jabatan1     String?
+  gambar1      String?
+  prodi1       String?
+  nama2        String?
+  jabatan2     String?
+  gambar2      String?
+  prodi2       String?
+  nama3        String?
+  jabatan3     String?
+  gambar3      String?
+  prodi3       String?
+  nama4        String?
+  jabatan4     String?
+  gambar4      String?
+  prodi4       String?
+  nama5        String?
+  jabatan5     String?
+  gambar5      String?
+  prodi5       String?
+  nama6        String?
+  jabatan6     String?
+  gambar6      String?
+  prodi6       String?
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+  organisasi   Organisasi @relation(fields: [organisasiId], references: [id])
+
+  @@map("struktur_tampilan")
+}
+
+model StrukturTampilanDivisi {
+  id              Int        @id @default(autoincrement())
+  organisasiId    Int        @map("organisasi_id")
+  namaDivisi      String     @map("nama_divisi")
+  tahun           String
+  periode         String?
+  namaKetua       String?    @map("nama_ketua")
+  jabatanKetua    String?    @map("jabatan_ketua")
+  gambarKetua     String?    @map("gambar_ketua")
+  prodiKetua      String?    @map("prodi_ketua")
+  namaAnggota1    String?    @map("nama_anggota_1")
+  jabatanAnggota1 String?    @map("jabatan_anggota_1")
+  gambarAnggota1  String?    @map("gambar_anggota_1")
+  prodiAnggota1   String?    @map("prodi_anggota_1")
+  namaAnggota2    String?    @map("nama_anggota_2")
+  jabatanAnggota2 String?    @map("jabatan_anggota_2")
+  gambarAnggota2  String?    @map("gambar_anggota_2")
+  prodiAnggota2   String?    @map("prodi_anggota_2")
+  namaAnggota3    String?    @map("nama_anggota_3")
+  jabatanAnggota3 String?    @map("jabatan_anggota_3")
+  gambarAnggota3  String?    @map("gambar_anggota_3")
+  prodiAnggota3   String?    @map("prodi_anggota_3")
+  namaAnggota4    String?    @map("nama_anggota_4")
+  jabatanAnggota4 String?    @map("jabatan_anggota_4")
+  gambarAnggota4  String?    @map("gambar_anggota_4")
+  prodiAnggota4   String?    @map("prodi_anggota_4")
+  namaAnggota5    String?    @map("nama_anggota_5")
+  jabatanAnggota5 String?    @map("jabatan_anggota_5")
+  gambarAnggota5  String?    @map("gambar_anggota_5")
+  prodiAnggota5   String?    @map("prodi_anggota_5")
+  namaAnggota6    String?    @map("nama_anggota_6")
+  jabatanAnggota6 String?    @map("jabatan_anggota_6")
+  gambarAnggota6  String?    @map("gambar_anggota_6")
+  prodiAnggota6   String?    @map("prodi_anggota_6")
+  namaAnggota7    String?    @map("nama_anggota_7")
+  jabatanAnggota7 String?    @map("jabatan_anggota_7")
+  gambarAnggota7  String?    @map("gambar_anggota_7")
+  prodiAnggota7   String?    @map("prodi_anggota_7")
+  namaAnggota8    String?    @map("nama_anggota_8")
+  jabatanAnggota8 String?    @map("jabatan_anggota_8")
+  gambarAnggota8  String?    @map("gambar_anggota_8")
+  prodiAnggota8   String?    @map("prodi_anggota_8")
+  createdAt       DateTime   @default(now()) @map("created_at")
+  updatedAt       DateTime   @updatedAt @map("updated_at")
+  organisasi      Organisasi @relation(fields: [organisasiId], references: [id])
+
+  @@map("struktur_tampilan_divisi")
+}
+
+model BlockedIp {
+  id        Int      @id @default(autoincrement())
+  ipAddress String   @unique @map("ip_address")
+  reason    String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("blocked_ips")
+}
+
+model ContactSecurity {
+  id           Int       @id @default(autoincrement())
+  ipAddress    String    @map("ip_address")
+  email        String
+  attemptCount Int       @default(1) @map("attempt_count")
+  lastAttempt  DateTime  @map("last_attempt")
+  isBlocked    Boolean   @default(false) @map("is_blocked")
+  blockedUntil DateTime? @map("blocked_until")
+
+  @@map("contact_security")
+}
+
+model EmailOtp {
+  id        BigInt   @id @default(autoincrement())
+  email     String
+  otp       String
+  purpose   String
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("email_otps")
+}
+
+model SecurityLog {
+  id            Int      @id @default(autoincrement())
+  ipAddress     String   @map("ip_address")
+  userAgent     String?  @map("user_agent")
+  requestUrl    String   @map("request_url")
+  requestMethod String   @map("request_method")
+  eventType     String   @map("event_type")
+  description   String?
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@map("security_logs")
+}
+
+model Anggaran {
+  id           Int        @id @default(autoincrement())
+  organisasiId Int        @map("organisasi_id")
+  nominal      Decimal    @db.Decimal(15, 2)
+  tahun        String
+  keterangan   String?
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+  organisasi   Organisasi @relation(fields: [organisasiId], references: [id])
+
+  @@map("anggaran")
+}
+
+model ProgramKerja {
+  id           Int        @id @default(autoincrement())
+  organisasiId Int        @map("organisasi_id")
+  judul        String
+  tahun        String
+  periode      String?
+  deskripsi    Json
+  isActive     Boolean    @default(false) @map("is_active")
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+  organisasi   Organisasi @relation(fields: [organisasiId], references: [id])
+
+  @@map("program_kerja")
+}
+
+model VisiMisi {
+  id           Int        @id @default(autoincrement())
+  organisasiId Int        @map("organisasi_id")
+  visi         String
+  misi         String
+  tahun        String
+  periode      String?
+  isActive     Boolean    @default(false) @map("is_active")
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+  organisasi   Organisasi @relation(fields: [organisasiId], references: [id])
+
+  @@map("visi_misi")
+}
+
+model NamaSertifikat {
+  id          Int          @id @default(autoincrement())
+  name        String
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+  sertifikats Sertifikat[]
+
+  @@map("nama_sertifikat")
+}
+
+model Sertifikat {
+  id               Int            @id @default(autoincrement())
+  namaKegiatan     String         @map("nama_kegiatan")
+  namaSertifikatId Int            @map("nama_sertifikat_id")
+  namaPenerima     String         @map("nama_penerima")
+  fakultasId       Int            @map("fakultas_id")
+  nim              String
+  file             String
+  qrCode           String?        @map("qr_code")
+  userId           Int?           @map("user_id")
+  userName         String?        @map("user_name")
+  userEmail        String?        @map("user_email")
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+  fakultas         Fakultas       @relation(fields: [fakultasId], references: [id])
+  namaSertifikat   NamaSertifikat @relation(fields: [namaSertifikatId], references: [id])
+
+  @@map("sertifikat")
+}

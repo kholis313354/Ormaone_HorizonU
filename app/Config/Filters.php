@@ -13,6 +13,9 @@ use CodeIgniter\Filters\PageCache;
 use CodeIgniter\Filters\PerformanceMetrics;
 use CodeIgniter\Filters\SecureHeaders;
 
+// Tambahan untuk filter rate limit
+use App\Filters\RateLimitFilter;
+
 class Filters extends BaseFilters
 {
     /**
@@ -20,44 +23,36 @@ class Filters extends BaseFilters
      * make reading things nicer and simpler.
      *
      * @var array<string, class-string|list<class-string>>
-     *
-     * [filter_name => classname]
-     * or [filter_name => [classname1, classname2, ...]]
      */
     public array $aliases = [
-        'csrf'          => CSRF::class,
-        'toolbar'       => DebugToolbar::class,
-        'honeypot'      => Honeypot::class,
-        'invalidchars'  => InvalidChars::class,
+        'csrf' => CSRF::class,
+        'toolbar' => DebugToolbar::class,
+        'honeypot' => Honeypot::class,
+        'invalidchars' => InvalidChars::class,
         'secureheaders' => SecureHeaders::class,
-        'cors'          => Cors::class,
-        'forcehttps'    => ForceHTTPS::class,
-        'pagecache'     => PageCache::class,
-        'performance'   => PerformanceMetrics::class,
+        'ipBlocker' => \App\Filters\IpBlocker::class, // Custom IP Blocker
+        'cors' => Cors::class,
+        'forcehttps' => ForceHTTPS::class,
+        'pagecache' => PageCache::class,
+        'performance' => PerformanceMetrics::class,
+        'locale' => \App\Filters\LocaleFilter::class,
+        'ratelimit' => \App\Filters\RateLimitFilter::class, // Filter Pembatas Kecepatan
     ];
 
     /**
      * List of special required filters.
      *
-     * The filters listed here are special. They are applied before and after
-     * other kinds of filters, and always applied even if a route does not exist.
-     *
-     * Filters set by default provide framework functionality. If removed,
-     * those functions will no longer work.
-     *
-     * @see https://codeigniter.com/user_guide/incoming/filters.html#provided-filters
-     *
      * @var array{before: list<string>, after: list<string>}
      */
     public array $required = [
         'before' => [
-            'forcehttps', // Force Global Secure Requests
-            'pagecache',  // Web Page Caching
+            'forcehttps',
+            'pagecache',
         ],
         'after' => [
-            'pagecache',   // Web Page Caching
-            'performance', // Performance Metrics
-            'toolbar',     // Debug Toolbar
+            'pagecache',
+            'performance',
+            //'toolbar', // Aktifkan hanya saat development
         ],
     ];
 
@@ -65,30 +60,41 @@ class Filters extends BaseFilters
      * List of filter aliases that are always
      * applied before and after every request.
      *
-     * @var array<string, array<string, array<string, string>>>|array<string, list<string>>
+     * @var array<string, list<string>>
      */
     public array $globals = [
         'before' => [
-            // 'honeypot',
-            // 'csrf',
-            // 'invalidchars',
+            'ipBlocker', // Check IP Block first!
+            // 'locale', // Temporarily disabled
+            'csrf' => [
+                'except' => [
+                    'sertifikat/save',
+                    'sertifikat/importBatch',
+                    'sertifikat/uploadBaseFile',
+                    'organisasi/mahasiswa/importBatch',
+                    'vote/request-otp',
+                    'vote/verify-otp',
+                    'vote/*' // Wildcard untuk semua route vote
+                ]
+            ], // Disable CSRF untuk route tertentu
+            'invalidchars',
+            'ratelimit' => [
+                'except' => [
+                    'vote/*', // Jangan batasi request OTP (agar tidak gagal kirim)
+                    'uploads/*', // Jangan batasi load gambar/file
+                ]
+            ], // Aktifkan Rate Limit dengan pengecualian
+            'honeypot',
         ],
         'after' => [
-            // 'honeypot',
-            // 'secureheaders',
+            'secureheaders',
+            'honeypot',
         ],
     ];
 
     /**
      * List of filter aliases that works on a
      * particular HTTP method (GET, POST, etc.).
-     *
-     * Example:
-     * 'POST' => ['foo', 'bar']
-     *
-     * If you use this, you should disable auto-routing because auto-routing
-     * permits any HTTP method to access a controller. Accessing the controller
-     * with a method you don't expect could bypass the filter.
      *
      * @var array<string, list<string>>
      */
@@ -98,10 +104,16 @@ class Filters extends BaseFilters
      * List of filter aliases that should run on any
      * before or after URI patterns.
      *
-     * Example:
-     * 'isLoggedIn' => ['before' => ['account/*', 'profiles/*']]
-     *
      * @var array<string, array<string, list<string>>>
      */
-    public array $filters = [];
+    public array $filters = [
+        'csrf' => [
+            'except' => [
+                'api/*',
+                'auth/login',
+                'vote/request-otp',
+                'vote/verify-otp',
+            ],
+        ],
+    ];
 }

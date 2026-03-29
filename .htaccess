@@ -1,0 +1,91 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # 🔄 REDIRECT KE /public/ SEKALI SAJA (hindari double /public/public)
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^$ public/ [L]
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+# 🔒 BLOKIR FILE SENSITIF
+<FilesMatch "^(\.env|env|\.htaccess|composer\.(json|lock)|\.git|\.gitignore|README\.md|phpunit\.xml)$">
+    Require all denied
+</FilesMatch>
+
+# 🚫 BLOKIR AKSES KE FOLDER SENSITIF
+RedirectMatch 403 ^/(app|system|writable|tests)/
+
+# 🌐 CORS UNTUK FONT DAN SCRIPT
+<IfModule mod_headers.c>
+    <FilesMatch "\.(ttf|ttc|otf|eot|woff|woff2|css|js)$">
+        Header set Access-Control-Allow-Origin "*"
+    </FilesMatch>
+</IfModule>
+
+# 🛡️ PROTEKSI CLICKJACKING, XSS, DAN CONTENT SNIFFING
+<IfModule mod_headers.c>
+    Header always set X-Frame-Options "DENY"
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set X-Content-Type-Options "nosniff"
+</IfModule>
+
+# 🔥 MENCEGAH HOTLINKING (kecuali untuk uploads/qrcode)
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    # Izinkan akses ke QR Code di uploads/qrcode tanpa cek referer
+    RewriteCond %{REQUEST_URI} ^/public/uploads/qrcode/.*\.(png|jpg|jpeg|gif)$ [NC,OR]
+    RewriteCond %{REQUEST_URI} ^/uploads/qrcode/.*\.(png|jpg|jpeg|gif)$ [NC]
+    RewriteRule ^(.*)$ - [L]
+    
+    # Blokir hotlinking untuk file lain
+    RewriteCond %{HTTP_REFERER} !^$
+    RewriteCond %{HTTP_REFERER} !^https://ormaone.com/ [NC]
+    RewriteCond %{REQUEST_URI} !^/public/uploads/qrcode/ [NC]
+    RewriteCond %{REQUEST_URI} !^/uploads/qrcode/ [NC]
+    RewriteRule \.(jpg|jpeg|png|gif|bmp|tiff|pdf|mp4|webm)$ - [F]
+</IfModule>
+
+# 🚫 PROTEKSI SQL INJECTION (jangan blokir query string biasa seperti v=123)
+RewriteCond %{QUERY_STRING} (\|)|(\-\-) [NC]
+RewriteRule ^(.*)$ - [F,L]
+
+# 🔐 MENCEGAH AKSES KE FILE .htaccess
+<Files ".htaccess">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# 🚫 MENCEGAH AKSES KE FILE KONFIGURASI
+<FilesMatch "\.(ini|phps|fla|psd|log|sh|git|bak|swp)$">
+    Require all denied
+</FilesMatch>
+
+# 📛 NONAKTIFKAN DIRECTORY LISTING
+Options -Indexes
+
+# 🤖 BLOKIR USER AGENT BERBAHAYA
+<IfModule mod_setenvif.c>
+    SetEnvIf User-Agent "Acunetix|Nikto|dirbuster|Nmap|masscan|Wget|lwp-trivial|cURL|sqlmap|python-requests|curl" bad_bot
+    Order Allow,Deny
+    Allow from all
+    Deny from env=bad_bot
+</IfModule>
+
+# 🔒 AKTIFKAN HSTS (HTTP STRICT TRANSPORT SECURITY)
+<IfModule mod_headers.c>
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+</IfModule>
+
+# 🛡️ MENCEGAH HTTP RESPONSE SPLITTING
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set X-Frame-Options "DENY"
+</IfModule>
+
+# 🚫 MENCEGAH SERANGAN MELALUI REFERER
+<IfModule mod_rewrite.c>
+    RewriteCond %{HTTP_REFERER} ^https?://[^/]+\.example\.com [NC]
+    RewriteRule .* - [F]
+</IfModule>

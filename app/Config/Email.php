@@ -6,8 +6,8 @@ use CodeIgniter\Config\BaseConfig;
 
 class Email extends BaseConfig
 {
-    public string $fromEmail  = '';
-    public string $fromName   = '';
+    public string $fromEmail  = 'ormaonehorizonu@ormaone.com';
+    public string $fromName   = 'OrmaOne - Email';
     public string $recipients = '';
 
     /**
@@ -18,7 +18,7 @@ class Email extends BaseConfig
     /**
      * The mail sending protocol: mail, sendmail, smtp
      */
-    public string $protocol = 'mail';
+    public string $protocol = 'smtp';
 
     /**
      * The server path to Sendmail.
@@ -28,27 +28,27 @@ class Email extends BaseConfig
     /**
      * SMTP Server Hostname
      */
-    public string $SMTPHost = '';
+    public string $SMTPHost = 'smtp.hostinger.com';
 
     /**
-     * SMTP Username
+     * SMTP Username (gunakan email dari Hostinger, contoh: ormaonehorizonu@ormaone.com)
      */
-    public string $SMTPUser = '';
+    public string $SMTPUser = 'ormaonehorizonu@ormaone.com';
 
     /**
-     * SMTP Password
+     * SMTP Password (password dari email Hostinger)
      */
-    public string $SMTPPass = '';
+    public string $SMTPPass = 'Dj0k@m313354';
 
     /**
-     * SMTP Port
+     * SMTP Port (Hostinger menggunakan port 587 untuk TLS atau 465 untuk SSL)
      */
-    public int $SMTPPort = 25;
+    public int $SMTPPort = 587;
 
     /**
      * SMTP Timeout (in seconds)
      */
-    public int $SMTPTimeout = 5;
+    public int $SMTPTimeout = 15;
 
     /**
      * Enable persistent SMTP connections
@@ -60,7 +60,7 @@ class Email extends BaseConfig
      *
      * @var string '', 'tls' or 'ssl'. 'tls' will issue a STARTTLS command
      *             to the server. 'ssl' means implicit SSL. Connection on port
-     *             465 should set this to ''.
+     *             465 should set this to 'ssl'. Port 587 should use 'tls'.
      */
     public string $SMTPCrypto = 'tls';
 

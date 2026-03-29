@@ -51,6 +51,17 @@ abstract class BaseController extends Controller
         // Do Not Edit This Line
         parent::initController($request, $response, $logger);
 
+        // Set default timezone PHP ke Asia/Jakarta
+        date_default_timezone_set('Asia/Jakarta');
+        
+        // Set MySQL timezone ke Asia/Jakarta saat koneksi
+        try {
+            $db = \Config\Database::connect();
+            $db->query("SET time_zone = '+07:00'"); // UTC+7 untuk Asia/Jakarta
+        } catch (\Exception $e) {
+            // Ignore jika query gagal
+        }
+
         // Preload any models, libraries, etc, here.
 
         // E.g.: $this->session = service('session');

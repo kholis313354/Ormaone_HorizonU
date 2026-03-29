@@ -23,4 +23,7 @@ class PemilihanCalonSuaraModel extends Model
 
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
+        // Optional: For soft delete functionality
+    // protected $useSoftDeletes = true;
+    //== protected $deletedField  = 'deleted_at';
 }

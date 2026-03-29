@@ -4,7 +4,7 @@
         <div class="row gy-4">
             <div class="col-lg-4 col-md-6 footer-about">
                 <a href="index.html" class="logo d-flex align-items-center">
-                    <img src="<?= base_url('dist/landing/assets/img/logo1.png') ?>" alt="">
+                    <img src="<?= base_url('dist/landing/assets/img/logo111.png') ?>" style="width:50px;height:50px;"alt="">
                     <span class="sitename" style="color: #980517;">OrmaOne</span>
                 </a>
                 <div class="footer-contact pt-3">

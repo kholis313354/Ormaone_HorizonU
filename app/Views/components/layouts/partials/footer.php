@@ -1,8 +1,5 @@
-<footer class="py-4  mt-auto">
-    <div class="container-fluid px-4">
-        <div class="d-flex align-items-center justify-content-center small">
-            <div class="text-muted">Copyright &copy; ormaone 2025</div>
-
-        </div>
+<footer class="footer clearfix mb-0 text-muted mt-auto">
+    <div class="text-center">
+        <p>Copyright &copy; ormaone 2025</p>
     </div>
 </footer>

@@ -15,6 +15,7 @@ class AnggotaModel extends Model
         'nim',
         'name',
         'kelas',
+        'fakultas_id',
         'jurusan',
         'phone',
         'notes',

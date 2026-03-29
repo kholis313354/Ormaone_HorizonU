@@ -14,6 +14,8 @@ class UserModel extends Model
         'name',
         'email',
         'password',
+        'profile_photo',
+        'organisasi_id',
     ];
 
     protected $createdField  = 'created_at';
